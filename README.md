@@ -5,14 +5,9 @@ Tecnología en Desarrollo de Sistemas Informáticos
 📅 II Semestre 2026  
 👨‍🏫 Profesor: Mag. Carlos Adolfo Beltrán Castro  
 👨‍💻 Estudiantes: 
-- Juan David Conde Martinez - C.C. [Número de Cédula]
-- Marlene Ramirez Alvarez - C.C. [Número de Cédula]
-- Daniel Eduardo García Chinchilla - C.C. [Número de Cédula]
-
----
-
-![Pantalla Inicial]( screenshots/menu_principal.png )
-*Imagen de Pantalla Inicial con Menú del Proyecto*
+- Juan David Conde Martinez
+- Marlene Ramirez Alvarez
+- Daniel Eduardo García Chinchilla
 
 ---
 
@@ -34,15 +29,12 @@ La interfaz principal cuenta con un panel de navegación que integra el logo ins
 
 ### 🖼️ Vistas - CRUD e Interfaz
 - **Módulo de Autenticación (Login):**
-  ![Login]( screenshots/login.png )
   *Pantalla de acceso con validación de credenciales.*
 
 - **Módulo de Gestión de Productos (CRUD):**
-  ![CRUD Productos]( screenshots/crud_productos.png )
   *Tabla interactiva para la creación, lectura, edición y eliminación de productos.*
 
 - **Opción Salir / Cierre de Sesión:**
-  ![Salir]( screenshots/logout_dialog.png )
   *Diálogo informativo para confirmación de cierre de sesión.*
 
 ---
