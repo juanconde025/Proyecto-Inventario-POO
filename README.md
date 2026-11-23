@@ -37,6 +37,36 @@ La interfaz principal cuenta con un panel de navegación que integra el logo ins
 - **Opción Salir / Cierre de Sesión:**
   *Diálogo informativo para confirmación de cierre de sesión.*
 
+# Módulo de Facturación (conectado al inventario)
+
+Descuento automático de stock: 
+Al generar o confirmar una factura, las cantidades vendidas deben restarse del inventario disponible de forma segura 
+(idealmente dentro de una transacción para evitar inconsistencias si ocurre un error a mitad del proceso).
+
+Integridad de precios y datos: 
+Guarda en el detalle de la factura el precio unitario al momento de la venta 
+(no solo la referencia al producto), así si luego cambia el precio del catálogo,
+el historial contable/operativo de facturas anteriores no se altera.
+
+Estados de factura y reversión: 
+Considera manejar estados (por ejemplo: emitida/pagada vs. anulada)
+y define qué pasa con el inventario si se anula una factura (devolver las unidades al stock).
+
+Trazabilidad: Asociar cada factura a la fecha/hora, al usuario que la registró y al cliente (si aplica).
+
+# Creación de Usuarios Solo por Administrador
+Control de acceso (RBAC (control de acceso basado en roles)/ permisos): 
+Verifica la validación tanto en la interfaz/menú como en la lógica de negocio/base de datos,
+para que un usuario estándar no pueda crear cuentas ni escalar sus propios permisos aunque acceda directamente a la ruta o endpoint.
+
+Roles y estado inicial: 
+Al crear un usuario, asigna claramente su rol (ej. Administrador, Vendedor/Cajero, Bodeguero) 
+y un estado (activo/inactivo) en lugar de borrar registros si hay historial asociado (como facturas creadas por ese usuario).
+
+Seguridad de credenciales: 
+Asegúrate de almacenar contraseñas con hash (nunca en texto plano)
+y exigir datos mínimos válidos (nombre de usuario único, contraseña robusta, etc.).
+
 ---
 
 ## 🧰 Lista de Tecnologías Usadas
