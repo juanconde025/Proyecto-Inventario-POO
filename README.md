@@ -84,42 +84,145 @@ y exigir datos mínimos válidos (nombre de usuario único, contraseña robusta,
 
 ### Script SQL (SQLite)
 ```sql
--- Tabla de Usuarios
+
+-- =====================================================
+-- BASE DE DATOS: NISSI ACCESORIOS
+-- MOTOR: SQLITE
+-- =====================================================
+
+PRAGMA foreign_keys = ON;
+
+-- =====================================================
+-- 1. TABLA USUARIOS
+-- Almacena los usuarios que ingresan al sistema.
+-- =====================================================
+
 CREATE TABLE IF NOT EXISTS usuarios (
     id_usuario INTEGER PRIMARY KEY AUTOINCREMENT,
-    username TEXT NOT NULL UNIQUE,
+    nombre TEXT NOT NULL,
+    usuario TEXT NOT NULL UNIQUE,
     password TEXT NOT NULL,
-    nombre_completo TEXT NOT NULL,
-    rol TEXT CHECK(rol IN ('Administrador', 'Empleado')) DEFAULT 'Empleado'
+    rol TEXT NOT NULL DEFAULT 'ADMIN',
+    estado INTEGER NOT NULL DEFAULT 1
 );
 
--- Tabla de Categorías
-CREATE TABLE IF NOT EXISTS categorias (
-    id_categoria INTEGER PRIMARY KEY AUTOINCREMENT,
-    nombre_categoria TEXT NOT NULL UNIQUE,
-    descripcion TEXT
-);
+-- =====================================================
+-- 2. TABLA PRODUCTOS
+-- Almacena los productos del inventario.
+-- =====================================================
 
--- Tabla de Productos
 CREATE TABLE IF NOT EXISTS productos (
     id_producto INTEGER PRIMARY KEY AUTOINCREMENT,
-    codigo TEXT UNIQUE NOT NULL,
+    codigo TEXT NOT NULL UNIQUE,
     nombre TEXT NOT NULL,
-    id_categoria INTEGER NOT NULL,
-    precio_compra REAL NOT NULL,
-    precio_venta REAL NOT NULL,
-    stock INTEGER NOT NULL DEFAULT 0,
-    stock_minimo INTEGER NOT NULL DEFAULT 5,
-    FOREIGN KEY (id_categoria) REFERENCES categorias(id_categoria)
+    categoria TEXT NOT NULL,
+    precio REAL NOT NULL CHECK(precio >= 0),
+    stock INTEGER NOT NULL DEFAULT 0 CHECK(stock >= 0),
+    descripcion TEXT,
+    estado INTEGER NOT NULL DEFAULT 1
 );
 
--- Datos Iniciales de Prueba
-INSERT INTO usuarios (username, password, nombre_completo, rol) 
-VALUES ('admin', 'admin123', 'Administrador Nissi', 'Administrador');
+-- =====================================================
+-- 3. TABLA CLIENTES
+-- Almacena la información de los clientes.
+-- =====================================================
 
-INSERT INTO categorias (nombre_categoria, descripcion) 
-VALUES ('Relojería', 'Relojes analógicos y digitales'),
-       ('Tecnología', 'Audífonos, cargadores y periféricos');
+CREATE TABLE IF NOT EXISTS clientes (
+    id_cliente INTEGER PRIMARY KEY AUTOINCREMENT,
+    documento TEXT NOT NULL UNIQUE,
+    nombre TEXT NOT NULL,
+    telefono TEXT,
+    correo TEXT,
+    direccion TEXT,
+    estado INTEGER NOT NULL DEFAULT 1
+);
+
+-- =====================================================
+-- 4. TABLA FACTURAS
+-- Almacena la información general de cada factura.
+-- =====================================================
+
+CREATE TABLE IF NOT EXISTS facturas (
+    id_factura INTEGER PRIMARY KEY AUTOINCREMENT,
+    fecha TEXT NOT NULL DEFAULT
+        (datetime('now','localtime')),
+    usuario TEXT NOT NULL,
+    total REAL NOT NULL DEFAULT 0 CHECK(total >= 0),
+    id_cliente INTEGER,
+    cliente_nombre TEXT NOT NULL DEFAULT 'Consumidor final',
+
+    FOREIGN KEY (id_cliente)
+        REFERENCES clientes(id_cliente)
+        ON DELETE SET NULL
+);
+
+-- =====================================================
+-- 5. TABLA DETALLE_FACTURA
+-- Almacena los productos incluidos en cada factura.
+-- =====================================================
+
+CREATE TABLE IF NOT EXISTS detalle_factura (
+    id_detalle INTEGER PRIMARY KEY AUTOINCREMENT,
+    id_factura INTEGER NOT NULL,
+    id_producto INTEGER,
+    codigo TEXT NOT NULL,
+    nombre TEXT NOT NULL,
+    cantidad INTEGER NOT NULL CHECK(cantidad > 0),
+    precio_unitario REAL NOT NULL
+        CHECK(precio_unitario >= 0),
+    subtotal REAL NOT NULL CHECK(subtotal >= 0),
+
+    FOREIGN KEY (id_factura)
+        REFERENCES facturas(id_factura)
+        ON DELETE CASCADE,
+
+    FOREIGN KEY (id_producto)
+        REFERENCES productos(id_producto)
+        ON DELETE SET NULL
+);
+
+-- =====================================================
+-- 6. TABLA VENTAS
+-- Almacena los movimientos de venta de los productos.
+-- =====================================================
+
+CREATE TABLE IF NOT EXISTS ventas (
+    id_venta INTEGER PRIMARY KEY AUTOINCREMENT,
+    id_producto INTEGER NOT NULL,
+    codigo TEXT NOT NULL,
+    nombre TEXT NOT NULL,
+    cantidad INTEGER NOT NULL CHECK(cantidad > 0),
+    precio_unitario REAL NOT NULL,
+    total REAL NOT NULL,
+    usuario TEXT,
+    fecha TEXT NOT NULL DEFAULT
+        (datetime('now','localtime')),
+    id_cliente INTEGER,
+    cliente_nombre TEXT NOT NULL DEFAULT 'Consumidor final',
+
+    FOREIGN KEY (id_cliente)
+        REFERENCES clientes(id_cliente)
+        ON DELETE SET NULL
+);
+
+-- =====================================================
+-- ÍNDICES PARA OPTIMIZAR LAS CONSULTAS
+-- =====================================================
+
+CREATE INDEX IF NOT EXISTS idx_facturas_fecha
+ON facturas(fecha);
+
+CREATE INDEX IF NOT EXISTS idx_detalle_factura
+ON detalle_factura(id_factura);
+
+-- =====================================================
+-- USUARIO ADMINISTRADOR INICIAL
+-- =====================================================
+
+INSERT OR IGNORE INTO usuarios
+(nombre, usuario, password, rol, estado)
+VALUES
+('Administrador', 'admin', '12345', 'ADMIN', 1);
 ```
 
 ---
